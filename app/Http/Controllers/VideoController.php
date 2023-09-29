@@ -26,6 +26,11 @@ class VideoController extends Controller
         return response()->json(['message' => 'Video uploaded successfully']);
     }
 
-    
+    // Render the page to play the video
+    public function play($video)
+    {
+        $videoUrl = asset('storage/videos/' . $video);
+        return view('video', ['videoUrl' => $videoUrl]);
+    }
 
 }
