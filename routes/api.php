@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\VideoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('v1/api')->group(function () {
+Route::prefix('v1')->group(function () {
     Route::post('/upload', [VideoController::class, 'upload']);
-    Route::get('/play/{video}',
-        [VideoController::class, 'play']
+    Route::get('/play/{video}', [VideoController::class, 'play']
     );
 });
+
+
