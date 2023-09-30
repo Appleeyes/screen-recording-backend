@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Cloudinary\Cloudinary;
-
+use Illuminate\Support\Str;
 
 class VideoController extends Controller
 {
@@ -12,32 +11,29 @@ class VideoController extends Controller
     public function upload(Request $request)
     {
         // Validate and store the uploaded video
-        $request->validate([
-            'video' => 'required|mimetypes:video/mp4|max:100240',
+        $request->validate(['video' => 'required|mimetypes:video/*',
         ]);
 
-        // Initialize the Cloudinary instance with your Cloudinary credentials
         $video = $request->file('video');
-        $cloudinary = new Cloudinary([
-            'cloud' => [
-                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                'api_key' => env('CLOUDINARY_API_KEY'),
-                'api_secret' => env('CLOUDINARY_API_SECRET'),
-            ],
-        ]);
+        $uniqueIdentifier = now()->timestamp;
+        $originalNameWithoutExtension = pathinfo($video->getClientOriginalName(), PATHINFO_FILENAME);
+        $originalExtension = $video->getClientOriginalExtension();
 
-        // Upload the video to Cloudinary
-        $uploadResult = $cloudinary->uploadApi()->upload($video->getPathname(), [
-            'resource_type' => 'video',
-        ]);
-
-        // Get the public URL of the uploaded video
-        $videoUrl = $uploadResult['secure_url'];
+        $videoName = "{$uniqueIdentifier}_{$originalNameWithoutExtension}.{$originalExtension}";
+        $path = $video->storeAs('public/videos', $videoName);
 
         // You can save the transcript here if needed
         // $transcript = $request->input('transcript');
 
-        return response()->json(['message' => 'Video uploaded successfully']);
+        $response = [
+            'name' => $videoName,
+            'size' => $video->getSize(),
+            'type' => $video->getMimeType(),
+            'path' => $path,
+            'uploaded_time' => now()->format('Y-m-d H:i:s'), 
+        ];
+
+        return response()->json(['message' => 'Video uploaded successfully', 'video_info' => $response]);
     }
 
     // Render the page to play the video
@@ -46,5 +42,7 @@ class VideoController extends Controller
         $videoUrl = asset('storage/videos/' . $video);
         return view('video', ['videoUrl' => $videoUrl]);
     }
+
+    
 
 }

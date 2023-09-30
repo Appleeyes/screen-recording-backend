@@ -20,5 +20,3 @@ Route::prefix('v1')->group(function () {
     Route::get('/play/{video}', [VideoController::class, 'play']
     );
 });
-
-
