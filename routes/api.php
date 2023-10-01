@@ -17,6 +17,7 @@ use App\Http\Controllers\VideoController;
 
 Route::prefix('v1')->group(function () {
     Route::post('/upload', [VideoController::class, 'upload']);
-    Route::get('/play/{video}', [VideoController::class, 'play']
-    );
+    Route::post('/upload_chunk', [VideoController::class, 'uploadChunk']);
+    Route::get('/play/{video}', [VideoController::class, 'play']);
+    Route::get('/list', [VideoController::class, 'videoList']);
 });
